@@ -1,4 +1,4 @@
-//! Country codes as defined by ISO 3166-1 alpha-2 (plus Kosovo's code, `XK`).
+//! Country codes as defined by ISO 3166-1 alpha-2.
 
 use crate::error::Error;
 use crate::result::Result;
