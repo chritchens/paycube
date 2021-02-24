@@ -3,7 +3,7 @@ pub mod ach;
 pub mod iso9326;
 pub mod iso31661_alpha2;
 pub mod error;
-pub mod iban;
+pub mod iso13616;
 pub mod result;
 pub mod sepa;
 pub mod swift;
