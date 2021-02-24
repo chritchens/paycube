@@ -1,6 +1,6 @@
 //! Business Identifier Code (BIC or SWIFT BIC or SWIFT code) as defined by ISO 9362.
 
-use crate::iso31661_alpha2::CountryCode;
+use crate::iso3166::CountryCode;
 
 pub struct IDCode(String);
 pub struct LocationCode(String);
