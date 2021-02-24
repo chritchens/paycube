@@ -4,20 +4,20 @@ use std::fmt;
 /// `Error` type of the crate.
 #[derive(Debug)]
 pub enum Error {
-    InvalidCode,
-    CodeNotFound,
-    Serialize(serde_json::Error),
-    Deserialize(serde_json::Error),
+    InvalidCountryCode,
+    CountryCodeNotFound,
+    JSONSerialize(serde_json::Error),
+    JSONDeserialize(serde_json::Error),
     Other(String),
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let msg: String = match self {
-            Error::InvalidCode => "invalid code".into(),
-            Error::CodeNotFound => "code not found".into(),
-            Error::Serialize(source) => format!("{}", source),
-            Error::Deserialize(source) => format!("{}", source),
+            Error::InvalidCountryCode => "invalid country code".into(),
+            Error::CountryCodeNotFound => "country code not found".into(),
+            Error::JSONSerialize(source) => format!("json serialization error: {}", source),
+            Error::JSONDeserialize(source) => format!("json deserialization error: {}", source),
             Error::Other(source) => source.into(),
         };
 
@@ -28,8 +28,8 @@ impl fmt::Display for Error {
 impl error::Error for Error {
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match self {
-            Error::Serialize(ref source) => Some(source),
-            Error::Deserialize(ref source) => Some(source),
+            Error::JSONSerialize(ref source) => Some(source),
+            Error::JSONDeserialize(ref source) => Some(source),
             _ => None,
         }
     }

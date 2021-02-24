@@ -1,7 +1,7 @@
 pub mod aba;
 pub mod ach;
 pub mod bic;
-pub mod codes;
+pub mod country_codes;
 pub mod error;
 pub mod iban;
 pub mod result;
