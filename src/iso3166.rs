@@ -19,7 +19,17 @@ impl CountryCode {
             return Err(Error::InvalidCode);
         }
 
-        Ok(CountryCode(code.into()))
+        Ok(CountryCode::from_str(code))
+    }
+
+    /// `from_str` converts a string slice to a `CountryCode`
+    pub fn from_str(code: &str) -> CountryCode {
+        CountryCode(Code::<U2>::from(code))
+    }
+
+    /// `as_str` returns the `CountryCode` as a string slice
+    pub fn as_str(&self) -> &str {
+        self.0.as_str()
     }
 
     /// `is_valid` returns if a provided code is valid
@@ -32,7 +42,7 @@ impl CountryCode {
     /// used are checked, not if the code is actually representative of a
     /// used code.
     pub fn validate(&self) -> Result<()> {
-        if !CountryCode::is_valid(self.0.as_str()) {
+        if !CountryCode::is_valid(self.as_str()) {
             return Err(Error::InvalidCode);
         }
 

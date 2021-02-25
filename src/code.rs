@@ -18,7 +18,7 @@ impl<N: Capacity> Code<N> {
             return Err(Error::InvalidCode);
         }
 
-        Ok(Code(code.into()))
+        Ok(Code::<N>::from_str(code))
     }
 
     /// `from_str` converts a string slice to a `Code<N>`
