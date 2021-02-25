@@ -1,5 +1,6 @@
 pub mod aba;
 pub mod ach;
+pub mod code;
 pub mod error;
 pub mod iso13616;
 pub mod iso3166;

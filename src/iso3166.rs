@@ -1,23 +1,22 @@
 //! Country codes as defined by ISO 3166-1 alpha-2.
 
+use crate::code::Code;
 use crate::error::Error;
 use crate::result::Result;
-use arraystring::{self, typenum::U2, ArrayString};
-use serde::{Deserialize, Serialize};
+use arraystring::{self, typenum::U2};
+use serde::{de::Deserializer, ser::Serializer, Deserialize, Serialize};
 use std::char;
 use std::collections::BTreeMap;
-
-/// [`LENGTH`] is the length of an ISO 3166-1 alpha-2 code
-const LENGTH: usize = 2;
+use std::result::Result as StdResult;
 
 /// [`CountryCode`] is an ISO 3166-1 alpha-2 code
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
-pub struct CountryCode(ArrayString<U2>);
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub struct CountryCode(Code<U2>);
 
 impl CountryCode {
     pub fn new(code: &str) -> Result<CountryCode> {
         if !CountryCode::is_valid(code) {
-            return Err(Error::InvalidCountryCode);
+            return Err(Error::InvalidCode);
         }
 
         Ok(CountryCode(code.into()))
@@ -26,19 +25,38 @@ impl CountryCode {
     /// `is_valid` returns if a provided code is valid
     /// by checking length and kind of chars used.
     pub fn is_valid(code: &str) -> bool {
-        code.len() == LENGTH
-            && code.find(|c: char| c.is_lowercase() || !c.is_ascii_alphabetic()) == None
+        Code::<U2>::is_valid(code) && code.find(|c: char| !c.is_ascii_alphabetic()) == None
     }
 
     /// `validate` validates the [`CountryCode`]. Here only length and digites
     /// used are checked, not if the code is actually representative of a
     /// used code.
     pub fn validate(&self) -> Result<()> {
-        if !CountryCode::is_valid(&self.0) {
-            return Err(Error::InvalidCountryCode);
+        if !CountryCode::is_valid(self.0.as_str()) {
+            return Err(Error::InvalidCode);
         }
 
         Ok(())
+    }
+}
+
+impl<'a> From<&'a str> for CountryCode {
+    fn from(code: &str) -> Self {
+        CountryCode(Code::<U2>::from_str(code))
+    }
+}
+
+impl Serialize for CountryCode {
+    #[inline]
+    fn serialize<S: Serializer>(&self, ser: S) -> StdResult<S::Ok, S::Error> {
+        Serialize::serialize(self.0.as_str(), ser)
+    }
+}
+
+impl<'a> Deserialize<'a> for CountryCode {
+    #[inline]
+    fn deserialize<D: Deserializer<'a>>(des: D) -> StdResult<Self, D::Error> {
+        <&str>::deserialize(des).map(Self::from)
     }
 }
 
@@ -66,7 +84,7 @@ impl CountryCodes {
         let c = CountryCode::new(code)?;
 
         if !self.exists(&c) {
-            Err(Error::CountryCodeNotFound)
+            Err(Error::CodeNotFound)
         } else {
             Ok(())
         }
