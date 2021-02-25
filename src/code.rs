@@ -1,4 +1,4 @@
-//!  codes as defined by ISO 3166-1 alpha-2.
+//! Generic string code used in account identifiers.
 
 use crate::error::Error;
 use crate::result::Result;
