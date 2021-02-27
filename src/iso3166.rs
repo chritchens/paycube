@@ -3,11 +3,11 @@
 use crate::code::Code;
 use crate::error::Error;
 use crate::result::Result;
-use arraystring::{self, typenum::U2};
+use arraystring::typenum::U2;
 use serde::{de::Deserializer, ser::Serializer, Deserialize, Serialize};
-use std::char;
 use std::collections::BTreeMap;
 use std::result::Result as StdResult;
+use std::str::FromStr;
 
 /// [`CountryCode`] is an ISO 3166-1 alpha-2 code
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -19,12 +19,7 @@ impl CountryCode {
             return Err(Error::InvalidCode);
         }
 
-        Ok(CountryCode::from_str(code))
-    }
-
-    /// `from_str` converts a string slice to a `CountryCode`
-    pub fn from_str(code: &str) -> CountryCode {
-        CountryCode(Code::<U2>::from(code))
+        Ok(CountryCode(Code::<U2>::from(code)))
     }
 
     /// `as_str` returns the `CountryCode` as a string slice
@@ -50,9 +45,17 @@ impl CountryCode {
     }
 }
 
+impl FromStr for CountryCode {
+    type Err = Error;
+
+    fn from_str(code: &str) -> StdResult<Self, Self::Err> {
+        CountryCode::new(code)
+    }
+}
+
 impl<'a> From<&'a str> for CountryCode {
     fn from(code: &str) -> Self {
-        CountryCode(Code::<U2>::from_str(code))
+        CountryCode::from_str(code).unwrap()
     }
 }
 

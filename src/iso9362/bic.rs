@@ -10,5 +10,5 @@ pub struct BIC {
     pub institution: InstitutionCode,
     pub country: CountryCode,
     pub location: LocationCode,
-    pub branch: BranchCode,
+    pub branch: Option<BranchCode>,
 }

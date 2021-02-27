@@ -5,6 +5,8 @@ use crate::result::Result;
 use arraystring::{prelude::Capacity, ArrayString};
 use serde::{Deserialize, Serialize};
 use std::char;
+use std::result::Result as StdResult;
+use std::str::FromStr;
 
 /// [`Code`] is a fixed length array string.
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
@@ -18,12 +20,7 @@ impl<N: Capacity> Code<N> {
             return Err(Error::InvalidCode);
         }
 
-        Ok(Code::<N>::from_str(code))
-    }
-
-    /// `from_str` converts a string slice to a `Code<N>`
-    pub fn from_str(code: &str) -> Code<N> {
-        Code::<N>(ArrayString::<N>::from(code))
+        Ok(Code::<N>(ArrayString::<N>::from(code)))
     }
 
     /// `as_str` returns the `Code<N>` as a string slice
@@ -35,7 +32,7 @@ impl<N: Capacity> Code<N> {
     /// by checking length and kind of chars used.
     pub fn is_valid(code: &str) -> bool {
         (code.len() as u8) == ArrayString::<N>::capacity()
-            && code.find(|c: char| c.is_lowercase() || !c.is_ascii()) == None
+            && code.find(|c: char| c.is_lowercase() || !c.is_ascii_alphanumeric()) == None
     }
 
     /// `validate` validates the `Code`.
@@ -48,8 +45,16 @@ impl<N: Capacity> Code<N> {
     }
 }
 
+impl<N: Capacity> FromStr for Code<N> {
+    type Err = Error;
+
+    fn from_str(code: &str) -> StdResult<Self, Self::Err> {
+        Code::<N>::new(code)
+    }
+}
+
 impl<'a, N: Capacity> From<&'a str> for Code<N> {
     fn from(code: &str) -> Self {
-        Code::<N>::from_str(code)
+        Code::<N>::from_str(code).unwrap()
     }
 }
